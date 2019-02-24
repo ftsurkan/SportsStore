@@ -21,11 +21,16 @@ const routes: Routes = [
     path: 'checkout', component: CheckoutComponent,
     canActivate: [StoreFirstGuard]
   },
+  {
+    path: 'admin',
+    loadChildren: './admin/admin.module#AdminModule',
+    canActivate: [StoreFirstGuard]
+  },
   { path: '**', redirectTo: '/store' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {enableTracing: true})],
+  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
   exports: [RouterModule],
   providers: [StoreFirstGuard]
 
