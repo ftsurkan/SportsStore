@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpRequest, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpHeaders, HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from './product.model';
 import { Cart } from './cart.model';
@@ -36,7 +36,7 @@ export class RestDataSource {
                 body: { name: user, password: pass },
                 responseType: 'json'
             }
-        ).pipe(map( (response: any ) => {
+        ).pipe(map((response: any) => {
             this.auth_token = response.success ? response.token : null;
             return response.success;
         }));
@@ -55,19 +55,51 @@ export class RestDataSource {
     }
 
     getProducts(auth: boolean = false): Observable<Product[]> {
-        // return this.sendRequest(RequestMethod.Get, 'products');
+      return <Observable<Product[]>>this.sendRequest( 'get', 'products');
 
+/*
         if (auth && this.auth_token != null) {
             // let h: HttpHeaders;
             // h.append('Authorization',`Bearer<${this.auth_token}>`);
-            // request.headers.set("Authorization", `Bearer<${this.auth_token}>`);
+            // request.headers.set('Authorization', `Bearer<${this.auth_token}>`);
             return this.httpClient.get<Product[]>(this.baseUrl + 'products', {
                 headers: { 'Authorization': `Bearer<${this.auth_token}>` }
             });
         }
 
         return this.httpClient.get<Product[]>(this.baseUrl + 'products');
+*/
     }
+
+    saveProduct(product: Product): Observable<Product> {
+        return <Observable<Product>>this.sendRequest('post', 'products',
+            product, true);
+    }
+    updateProduct(product): Observable<Product> {
+        return <Observable<Product>>this.sendRequest('put',
+            `products/${product.id}`, product, true);
+    }
+    deleteProduct(id: number): Observable<Product> {
+        return <Observable<Product>>this.sendRequest('delete',
+            `products/${id}`, null, true);
+    }
+    getOrders(): Observable<Order[]> {
+        return <Observable<Order[]>>this.sendRequest('get',
+            'orders', null, true);
+    }
+    deleteOrder(id: number): Observable<Order> {
+        return <Observable<Order>>this.sendRequest('delete',
+            `orders/${id}`, null, true);
+    }
+    updateOrder(order: Order): Observable<Order> {
+        return <Observable<Order>>this.sendRequest('put',
+            `orders/${order.id}`, order, true);
+    }
+
+
+
+
+
     saveOrder(order: Order, auth: boolean = false): Observable<Order> {
         // return this.sendRequest(RequestMethod.Post, 'orders', order);
         if (auth && this.auth_token != null) {
@@ -78,16 +110,49 @@ export class RestDataSource {
         });
     }
 
-    /*
-    private sendRequest(verb: RequestMethod,
-        url: string, body?: Product | Order): Observable<Product | Order> {
-        return this.http.request(new Request({
-            method: verb,
-            url: this.baseUrl + url,
-            body: body
-        })).map(response => response.json());
+
+    private sendRequest(verb: string,
+        url: string, body?: Product | Order, auth: boolean = false)
+            : Observable< Product | Product[] | Order | Order[] > {
+
+        const req = new HttpRequest( verb, this.baseUrl + url, body, {});
+        if (auth && this.auth_token != null) {
+            req.headers.set('Authorization', `Bearer<${this.auth_token}>`);
+        }
+
+        return this.httpClient.request< Product | Product[] | Order | Order[] >(req)
+            .pipe(map((response: any) => {
+                // HttpEvent< Product | Product[] | Order | Order[] >
+
+                if ( response instanceof HttpResponse ) {
+                    let u: any;
+                    u = <any>response;
+
+                    return u.body;
+                }
+                // is  HttpResponse< Product | Product[] | Order | Order[] >
+                // return (<HttpResponse< Product | Product[] | Order | Order[] >>response).body;
+
+
+                // let u: unknown;
+                // u = <unknown>response;
+                // return (HttpResponse< Product | Product[] | Order | Order[] >u).body;
+
+                return null;
+
+
+
+            }));
+
+        /*
+        return this.httpClient.request(
+            verb,
+            this.baseUrl + url,
+            { body: body }
+        );
+        */
     }
-    */
+
 
     /* private sendRequest( url: string): Observable<Product | Order> {
          const req = new HttpRequest( verb, this.baseUrl + url, body, {});
