@@ -20,21 +20,24 @@ export class ProductRepository {
             .filter(p => category == null || category === p.category);
     }
     getProduct(id: number): Product {
-        return this.products.find(p => p.id === id);
+        // tslint:disable-next-line triple-equals
+        return this.products.find(p => p.id == id);
     }
     getCategories(): string[] {
         return this.categories;
     }
 
     saveProduct(product: Product) {
-        if (product.id == null || product.id === 0) {
+        // tslint:disable-next-line triple-equals
+        if (product.id == null || product.id == 0) {
             this.dataSource.saveProduct(product)
                 .subscribe(p => this.products.push(p));
         } else {
             this.dataSource.updateProduct(product)
                 .subscribe(p => {
                     this.products.splice(this.products.
-                        findIndex(p2 => p2.id === product.id), 1, product);
+                        // tslint:disable-next-line triple-equals
+                        findIndex(p2 => p2.id == product.id), 1, product);
                 });
         }
     }
@@ -42,7 +45,8 @@ export class ProductRepository {
     deleteProduct(id: number) {
         this.dataSource.deleteProduct(id).subscribe(p => {
             this.products.splice(this.products.
-                findIndex(p2 => p2.id === id), 1);
+                // tslint:disable-next-line triple-equals
+                findIndex(p2 => p2.id == id), 1);
         } );
     }
 

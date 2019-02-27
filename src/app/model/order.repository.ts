@@ -30,13 +30,15 @@ export class OrderRepository {
     updateOrder(order: Order) {
         this.dataSource.updateOrder(order).subscribe(order2 => {
             this.orders.splice(this.orders.
-                findIndex(o => o.id === order2.id), 1, order2);
+                // tslint:disable-next-line triple-equals
+                findIndex(o => o.id == order2.id), 1, order2);
         });
     }
 
     deleteOrder(id: number) {
         this.dataSource.deleteOrder(id).subscribe(order => {
-            this.orders.splice(this.orders.findIndex(o => id === o.id));
+            // tslint:disable-next-line triple-equals
+            this.orders.splice(this.orders.findIndex(o => id == o.id));
         });
     }
 
