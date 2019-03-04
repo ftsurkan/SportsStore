@@ -9,7 +9,6 @@ import { Cart } from '../model/cart.model';
     selector: 'app-cart-summary',
     templateUrl: 'cartSummary.component.html'
 })
-
 export class CartSummaryComponent {
     constructor(public cart: Cart) { }
 }

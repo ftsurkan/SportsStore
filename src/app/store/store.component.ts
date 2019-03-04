@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-store-comp',
-    // moduleId: module.id,
     templateUrl: 'store.component.html'
 })
 export class StoreComponent {
